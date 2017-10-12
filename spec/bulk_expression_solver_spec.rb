@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'dentaku'
 require 'dentaku/bulk_expression_solver'
 
 RSpec.describe Dentaku::BulkExpressionSolver do
@@ -34,6 +35,43 @@ RSpec.describe Dentaku::BulkExpressionSolver do
       expressions = { "the value of x, incremented" => "x + 1" }
       solver = described_class.new(expressions, calculator.store("x" => 3))
       expect(solver.solve!).to eq({ "the value of x, incremented" => 4 })
+    end
+
+    it "evaluates properly with hashes and arrays" do
+      expressions = {
+        weekly_budget: {
+          fruit:  "weekly_budget.apples + weekly_budget.pears",
+          apples: "fruit_quantities.apple * fruit_prices.apple",
+          pears:  "fruit_quantities.pear * fruit_prices.pear",
+        },
+        discounted_fruit_prices: {
+          apple: "round(fruit_prices.apple * discounts[0], 2)",
+          pear: "round(fruit_prices.pear * discounts[1], 2)"
+        },
+        discounts: ["0.4 * 2", "0.3 * 2"],
+      }
+      solver = described_class.new(expressions, calculator.store(
+        fruit_quantities: { apple: 5, pear: 9 },
+        fruit_prices: {
+          apple: "1.33",
+          pear: "2.50"
+        }
+      ))
+      expect(solver.solve!).to eq(
+        weekly_budget: {
+          fruit: 5,
+          apples: 6.25,
+          pears: 10.95
+        },
+        discounted_fruit_prices: {
+          apple: 1.06,
+          pear: 1.50
+        },
+        fruit_prices: {
+          apple: "1.33",
+          pear: "2.50"
+        },
+      )
     end
   end
 

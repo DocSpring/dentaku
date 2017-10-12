@@ -2,11 +2,14 @@ require 'dentaku/dependency_resolver'
 require 'dentaku/exceptions'
 require 'dentaku/parser'
 require 'dentaku/tokenizer'
+require 'dentaku/flat_hash'
 
 module Dentaku
   class BulkExpressionSolver
+    include FlatHash
+
     def initialize(expression_hash, calculator)
-      self.expression_hash = expression_hash
+      self.expression_hash = flat_hash(expression_hash)
       self.calculator = calculator
     end
 
@@ -92,6 +95,9 @@ module Dentaku
     end
 
     def evaluate!(expression, results)
+      puts expression
+      puts
+      puts results
       calculator.evaluate!(expression, results)
     end
   end

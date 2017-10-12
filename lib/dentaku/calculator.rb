@@ -3,10 +3,13 @@ require 'dentaku/exceptions'
 require 'dentaku/token'
 require 'dentaku/dependency_resolver'
 require 'dentaku/parser'
+require 'dentaku/flat_hash'
 
 
 module Dentaku
   class Calculator
+    include FlatHash
+
     attr_reader :result, :memory, :tokenizer
 
     def initialize(ast_cache={})
@@ -50,6 +53,7 @@ module Dentaku
         node = ast(node) unless node.is_a?(AST::Node)
         unbound = node.dependencies - memory.keys
         unless unbound.empty?
+          binding.pry
           raise UnboundVariableError.new(unbound),
                 "no value provided for variables: #{unbound.join(', ')}"
         end
@@ -94,7 +98,7 @@ module Dentaku
       restore = Hash[memory]
 
       if value.nil?
-        _flat_hash(key_or_hash).each do |key, val|
+        flat_hash(key_or_hash).each do |key, val|
           memory[key.to_s.downcase] = val
         end
       else
@@ -130,17 +134,6 @@ module Dentaku
 
     def cache_ast?
       Dentaku.cache_ast? && !@disable_ast_cache
-    end
-
-    private
-
-    def _flat_hash(hash, k = [])
-      if hash.is_a?(Hash)
-        hash.inject({}) { |h, v| h.merge! _flat_hash(v[-1], k + [v[0]]) }
-      else
-        return { k.join('.') => hash } if k.is_a?(Array)
-        { k => hash }
-      end
     end
   end
 end
