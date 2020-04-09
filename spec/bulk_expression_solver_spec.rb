@@ -100,6 +100,11 @@ RSpec.describe Dentaku::BulkExpressionSolver do
           pear: "round(fruit_prices.pear * discounts[1], 2)"
         },
         discounts: ["0.4 * 2", "0.3 * 2"],
+        percents: [
+          { percent: 75 },
+          { percent: 35 },
+          { percent_avg: "round((percents[0].percent + percents[1].percent) / 2)" },
+        ]
       }
       solver = described_class.new(expressions, calculator)
 
@@ -113,7 +118,12 @@ RSpec.describe Dentaku::BulkExpressionSolver do
           "apple" => 1.33,
           "pear" => 1.50
         },
-        "discounts" => [0.8, 0.6]
+        "discounts" => [0.8, 0.6],
+        "percents" => [
+          { "percent" => 75 },
+          { "percent" => 35 },
+          { "percent_avg" => 55 },
+        ]
       )
     end
   end
