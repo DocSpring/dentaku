@@ -48,6 +48,7 @@ module Dentaku
       end
 
       if output.length > max_size && operations.empty?
+        binding.pry
         fail! :too_many_operands, operator: operator, expect: max_size, actual: output.length
       end
 

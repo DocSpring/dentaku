@@ -1,18 +1,19 @@
 require 'pry'
 require 'simplecov'
 require 'codecov'
+require 'super_diff/rspec'
 
-SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new([
-  SimpleCov::Formatter::HTMLFormatter,
-  SimpleCov::Formatter::Codecov,
-])
+# SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new([
+#   SimpleCov::Formatter::HTMLFormatter,
+#   SimpleCov::Formatter::Codecov,
+# ])
 
 SimpleCov.minimum_coverage 90
 SimpleCov.minimum_coverage_by_file 80
 
-SimpleCov.start do
-  add_filter "spec/"
-end
+# SimpleCov.start do
+#   add_filter "spec/"
+# end
 
 RSpec.configure do |c|
   c.before(:all) {

@@ -1,8 +1,16 @@
 module Dentaku
   class FlatHash
     def self.from_hash(h, key = [], acc = {})
-      return acc.update(key => h)  unless h.is_a? Hash
-      h.each { |k, v| from_hash(v, key + [k], acc) }
+      case h
+      when Hash
+        h.each { |k, v| from_hash(v, key + [k], acc) }
+      when Array
+        h.each_with_index do |el, i|
+          from_hash(el, key + [i], acc)
+        end
+      else
+        acc.update(key => h)
+      end
       flatten_keys(acc)
     end
 

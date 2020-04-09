@@ -35,12 +35,14 @@ module Dentaku
     end
 
     def dependencies
-      Hash[expression_deps].tap do |d|
+      deps = Hash[expression_deps].tap do |d|
         d.values.each do |deps|
           unresolved = deps.reject { |ud| d.has_key?(ud) }
           unresolved.each { |u| add_dependencies(d, u) }
         end
       end
+      binding.pry
+      deps
     end
 
     private
@@ -67,7 +69,12 @@ module Dentaku
       variables_in_resolve_order.each_with_object({}) do |var_name, r|
         begin
           solved = calculator.memory
-          value_from_memory = solved[var_name.downcase]
+          begin
+            value_from_memory = solved[var_name.downcase]
+          rescue Exception => ex
+            binding.pry
+            raise
+          end
 
           if value_from_memory.nil? &&
               expressions[var_name].nil? &&

@@ -103,7 +103,7 @@ RSpec.describe Dentaku::BulkExpressionSolver do
         percents: [
           { percent: 75 },
           { percent: 35 },
-          { percent_avg: "round((percents[0].percent + percents[1].percent) / 2)" },
+          { percent_avg: "round(percents.percent / 2, 2)" },
         ]
       }
       solver = described_class.new(expressions, calculator)
@@ -199,6 +199,14 @@ RSpec.describe Dentaku::BulkExpressionSolver do
       solver = described_class.new(expressions, calculator)
       results = solver.solve
       expect(results).to eq(Force: 50, Mass: 25, Acceleration: 2)
+    end
+
+    it 'solves all array expressions with nested hashes' do
+      calculator.store(first: 2)
+      system = {'key' => [{'foo' => 'first'}, 'key[0].foo * first'] }
+      solver = described_class.new(system, calculator)
+      expect(solver.dependencies).to eq(...)
+
     end
 
     it 'solves all array expressions for which context exists, returning :undefined for the rest' do
